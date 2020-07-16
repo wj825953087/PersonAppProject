@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/achartengine-1.2.0.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/fastjson-1.2.2.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/fastjson-1.2.2-sources.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-annotations-2.2.1.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-core-2.2.1.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-core-asl-1.8.8.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-databind-2.2.1.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-mapper-asl-1.8.4.jar')
+    implementation files('F:/FinalProject/ProjectPath/PersonAccount/app/libs/jackson-module-jaxb-annotations-2.2.1.jar')
+}

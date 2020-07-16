@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC 
+    "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ 
+<configuration>
+   <settings>
+        <!-- 打印查询语句 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
+	<typeAliases>
+		<typeAlias type="com.jizhang.entity.user.User"/>
+		<typeAlias type="com.jizhang.entity.user.UserAccount"/>
+		<typeAlias type="com.jizhang.entity.income.Income"/>
+		<typeAlias type="com.jizhang.entity.expend.Expend"/>
+		<typeAlias type="com.jizhang.entity.income.IncomeType"/>
+		<typeAlias type="com.jizhang.entity.expend.ExpendType"/>
+		
+		<!-- 测试 -->
+		<typeAlias type="com.text.News"/>
+
+	</typeAliases>
+	
+	<!-- 配置数据源 -->
+	<environments default="development">
+		<environment id="development">
+			
+			<transactionManager type="JDBC"/>
+			<!-- 数据源类型 -->
+			<dataSource type="POOLED">
+				<!-- 驱动名 -->
+				<property name="driver" value="com.mysql.jdbc.Driver"/>
+				<property name="url" value="jdbc:mysql://111.229.180.123:3306/Demo?characterEncoding=UTF-8"/>
+				<property name="username" value="root"/>
+				<property name="password" value="wujian2639898!@#$"/>
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="MapFile/UserMap.xml"/>
+		<mapper resource="MapFile/IncomeMap.xml"/>
+		<mapper resource="MapFile/ExpendMap.xml"/>
+		<mapper resource="MapFile/IncomeTypeMap.xml"/>
+		<mapper resource="MapFile/ExpendTypeMap.xml"/>
+		<mapper resource="MapFile/UserAccountMap.xml"/>
+		<!-- 测试 -->
+		<mapper resource="TextMapFile/TextMap.xml"/>
+
+			
+	</mappers>
+</configuration>

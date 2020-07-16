@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+     <mapper namespace="com.jizhang.entity.expend">
+    	 <!-- 支出表 -->
+    	 <resultMap type="com.jizhang.entity.expend.Expend" id="expend">
+  			<id property="ex_id" column="ex_id"/> <!-- 账单id -->
+  			<result property="user_id" column="user_id"/><!-- 用户id -->
+  			<result property="ex_money" column="ex_money"/><!-- 金额 -->
+  			<result property="ex_type" column="ex_type"/><!-- 类别 -->
+  			<result property="ex_account_type" column="ex_account_type"/><!-- 账户类别 -->
+  			<result property="ex_remark" column="ex_remark"/><!-- 备注 -->
+  			<result property="ex_time" column="ex_time"/><!-- 记录时间 -->
+  		
+  		<association property="expendType" javaType="com.jizhang.entity.expend.ExpendType">
+  				<id property="id" column="id"/>
+  				<result property="expend_name" column="expend_name"/>
+  				<result property="is_default" column="is_default"/>
+  				<result property="super_id" column="super_id"/>
+  				<result property="permissions" column="permissions"/>
+  				<result property="expend_pngId" column="expend_pngId"/>
+  		</association>
+  		<association property="account" javaType="com.jizhang.entity.user.UserAccount">
+  		  		<id property="id" column="id"></id>
+  				<result property="user_id" column="user_id"/>
+  				<result property="account_name" column="account_name"/>
+  				<result property="account_card_number" column="account_card_number"/>
+  				<result property="account_money" column="account_money"/>
+  		</association>
+    	 </resultMap>
+    <!-- 统计全部时间 各种消费类别的金额总额 -->
+    <select id="expend_type_money_count" parameterType="java.util.Map" resultType="double">
+    	SELECT sum(ex_money)
+    	FROM jz_expend
+    	WHERE user_id=#{user_id} 
+    	AND <if test="ex_type!=null">ex_type=#{ex_type}</if>
+    	
+    </select>
+    <!-- 统计某一时间段 各种消费类别的金额总额 -->
+    <select id="expend_type_money_count_time" parameterType="java.util.Map" resultType="double">
+    	SELECT sum(ex_money)
+    	FROM jz_expend
+    	WHERE user_id=#{user_id} 
+    	AND <if test="ex_type!=null">ex_type=#{ex_type}</if>
+    	AND ex_time BETWEEN #{start_time} AND #{end_time}
+    </select>
+    
+    <!--  根据支出表id查询一条信息 -->
+    <select id="getExpendById" parameterType="String" resultMap="expend">
+    	SELECT *
+    	FROM jz_expend `e`, jz_expend_type `t`,jz_user_account `ua`
+    	WHERE ex_id=#{ex_id}
+    	AND e.ex_type=t.id
+    	AND e.ex_account_type=ua.id
+    </select>
+     <!-- 统计所有时间的支出金额之和 -->
+  		<select id="expend_money_count" parameterType="int" resultType="double">
+			SELECT sum(ex_money)
+			FROM  jz_expend
+			WHERE user_id=#{user_id} 		
+  		</select>
+  	<!-- 统计某段时间支出金额之和 -->
+  		<select id="expend_money_count_time" parameterType="java.util.Map"   resultType="double">
+  			SELECT sum(ex_money)
+			FROM   jz_expend	
+			WHERE  user_id=#{id} 
+			AND ex_time BETWEEN #{start_time} AND #{end_time}
+			
+  		</select>
+  		
+  		<!-- 无条件查询 -->
+  		<select id="show_ExpendItem" parameterType="int" resultMap="expend" statementType="PREPARED">
+  		  	SELECT *
+			FROM   jz_expend `ex`,	jz_expend_type `t`
+			WHERE  user_id=#{user_id}  AND
+			ex.ex_type=t.id
+  		</select>
+
+  		<!-- 根据时间条件查询收入信息 -->
+  		<select id="show_ExpendItem_time" parameterType="java.util.Map"  resultMap="expend"  statementType="PREPARED">
+  			SELECT *
+			FROM   jz_expend `ex`,	jz_expend_type `t`	
+			WHERE  user_id=#{id}  AND 
+			ex.ex_type=t.id       AND 
+			ex_time BETWEEN #{start_time} AND #{end_time}
+			
+  		</select>
+  		
+  		<!-- 记录一条支出账单 -->
+  		<insert id="expend_insert" parameterType="com.jizhang.entity.expend.Expend" statementType="PREPARED" 
+  		useGeneratedKeys="true" keyProperty="ex_id">
+  			<selectKey keyProperty="ex_id" resultType="String" order="BEFORE">
+  				select replace(uuid(),'-','') from dual
+  			</selectKey>
+  			INSERT INTO jz_expend
+  			(ex_id,user_id,ex_money,ex_type,ex_account_type,ex_time)
+  			VALUES(#{ex_id},#{user_id},#{ex_money},#{ex_type},#{ex_account_type},#{ex_time})
+  		</insert>
+  		<!-- 更新一条支出账单 -->
+  		<update id="expend_update" parameterType="com.jizhang.entity.expend.Expend" statementType="PREPARED">
+  			UPDATE jz_expend
+  			<trim prefix="set" suffixOverrides=",">
+  				<if test="ex_money!=null">ex_money=#{ex_money},</if>
+  				<if test="ex_type!=null">ex_type=#{ex_type},</if>
+  				<if test="ex_account_type!=null">ex_account_type=#{ex_account_type},</if>
+  				<if test="ex_time!=null">ex_time=#{ex_time},</if>
+  				<if test="ex_remark!=null">ex_remark=#{ex_remark},</if>
+  			</trim>
+  			WHERE user_id=#{user_id} AND ex_id=#{ex_id}
+  		</update>
+  	  		<!-- 删除一条账单 -->
+  		<delete id="expend_delete" parameterType="java.util.Map">
+  			DELETE FROM  jz_expend WHERE ex_id=#{ex_id} AND user_id=#{user_id}
+  		</delete>	
+     </mapper>

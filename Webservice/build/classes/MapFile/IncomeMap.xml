@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    
+  
+  <mapper namespace="com.jizhang.entity.income">
+  		<!--jz_income 收入表 -->
+  		<resultMap type="com.jizhang.entity.income.Income" id="income">
+  			<id property="in_id" column="in_id"/> <!-- 账单id -->
+  			<result property="user_id" column="user_id"/><!-- 用户id -->
+  			<result property="in_money" column="in_money"/><!-- 金额 -->
+  			<result property="in_type" column="in_type"/><!-- 类别 -->
+  			<result property="in_account_type" column="in_account_type"/><!-- 账户类别 -->
+  			<result property="in_remark" column="in_remark"/><!-- 备注 -->
+  			<result property="in_time" column="in_time"/><!-- 记录时间 -->
+  			
+  			<association property="incomeType" javaType="com.jizhang.entity.income.IncomeType">
+  				<id property="id" column="id"/>
+  				<result property="income_name" column="income_name"/>
+  				<result property="is_default" column="is_default"/>
+  				<result property="super_id" column="super_id"/>
+  				<result property="permissions" column="permissions"/>
+  				<result property="income_pngId" column="income_pngId"/>
+  			</association>
+  			<association property="account" javaType="com.jizhang.entity.user.UserAccount">
+  				<id property="id" column="id"></id>
+  				<result property="user_id" column="user_id"/>
+  				<result property="account_name" column="account_name"/>
+  				<result property="account_card_number" column="account_card_number"/>
+  				<result property="account_money" column="account_money"/>
+  			</association>
+  		</resultMap>
+  		<!-- 统计全部时间内的各种收入类别的金额总额 -->
+  		<select id="income_type_money_count" parameterType="java.util.Map" resultType="double">
+  			SELECT sum(in_money)
+  			FROM jz_income
+  			WHERE user_id=#{user_id}
+  			AND <if test="in_type!=null">in_type=#{in_type}</if>
+  		</select>
+  				
+<!-- 统计某段时间内的各种收入类别的金额总额 -->
+  		<select id="income_type_money_count_time" parameterType="java.util.Map" resultType="double">
+  			SELECT sum(in_money)
+  			FROM jz_income
+  			WHERE user_id=#{user_id}
+  			AND <if test="in_type!=null">in_type=#{in_type}</if>
+  			AND in_time BETWEEN #{start_time} AND #{end_time}
+  		</select>
+  		<!-- 根据收入表id查一条信息 -->
+  		<select id="getIncomeById" parameterType="String" resultMap="income" >
+  			SELECT *
+  			FROM jz_income `i`,jz_income_type `t`,jz_user_account `ua`
+  			WHERE in_id=#{in_id} 
+  			AND i.in_type=t.id
+  			AND i.in_account_type=ua.id
+  		</select>
+  		<!-- 统计全部时间内的收入金额总额 -->
+  		<select id="income_money_count" parameterType="int" resultType="double">
+			SELECT sum(in_money)
+			FROM  jz_income
+			WHERE user_id=#{user_id} 		
+  		</select>
+  		<!-- 统计某段时间内的收入金额总额 -->
+  		<select id="income_money_count_time" parameterType="java.util.Map"   resultType="double">
+  			SELECT sum(in_money)
+			FROM   jz_income	
+			WHERE  user_id=#{id} 
+			AND in_time BETWEEN #{start_time} AND #{end_time}
+			
+  		</select>
+  		
+  		<!-- 无条件查询 -->
+  		<select id="show_IncomeItem" parameterType="int" resultMap="income" statementType="PREPARED">
+  		  	SELECT *
+			FROM   jz_income `i` ,jz_income_type `t`	
+			WHERE  user_id=#{user_id} AND
+			i.in_type=t.id
+			ORDER BY in_time DESC
+  		</select>
+
+  		<!-- 根据时间条件查询收入信息 -->
+  		<select id="show_IncomeItem_time" parameterType="java.util.Map"   resultMap="income" statementType="PREPARED">
+  			SELECT *
+			FROM   jz_income `i` ,jz_income_type `t`	
+			WHERE  user_id=#{id} AND
+			i.in_type=t.id       AND 
+			in_time BETWEEN #{start_time} AND #{end_time}
+			
+  		</select>
+  		
+  		<!-- 记录一条收入账单 -->
+  		<insert id="income_insert" parameterType="com.jizhang.entity.income.Income" statementType="PREPARED" >
+  			<selectKey keyProperty="in_id" resultType="String" order="BEFORE">
+  				select replace(uuid(),'-','') from dual
+  			</selectKey>
+  			INSERT INTO jz_income
+  			(in_id,user_id,in_money,in_type,in_account_type,in_time)
+  			VALUES(#{in_id},#{user_id},#{in_money},#{in_type},#{in_account_type},#{in_time})
+  		</insert>
+  		<!-- 更新一条收入账单 -->
+  		<update id="income_update" parameterType="com.jizhang.entity.income.Income" statementType="PREPARED">
+  			UPDATE jz_income
+  			<trim prefix="set" suffixOverrides=",">
+  				<if test="in_money!=null">in_money=#{in_money},</if>
+  				<if test="in_type!=null">in_type=#{in_type},</if>
+  				<if test="in_account_type!=null">in_account_type=#{in_account_type},</if>
+  				<if test="in_time!=null">in_time=#{in_time},</if>
+  				<if test="in_remark!=null">in_remark=#{in_remark},</if>
+  			</trim>
+  			WHERE user_id=#{user_id} AND in_id=#{in_id}
+  		</update>
+  		<!-- 删除一条账单 -->
+  		<delete id="income_delete" parameterType="java.util.Map">
+  			DELETE FROM  jz_income WHERE in_id=#{in_id} AND user_id=#{user_id}
+  		</delete>
+  </mapper>

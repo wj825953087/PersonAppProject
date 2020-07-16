@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    <mapper namespace="com.jizhang.entity.income.IncomeType">
+    	<resultMap type="com.jizhang.entity.income.IncomeType" id="incomeType">
+    		<id property="id" column="id" /> <!-- id -->
+    		<result property="income_name" column="income_name" /> 
+    		<result property="is_default" column="is_default"/><!-- 默认类别 -->
+    		<result property="super_id" column="super_id"/><!-- 上级 -->
+    		<result property="permissions" column="permissions"/><!-- 权限 -->
+    		<result property="income_pngId" column="income_pngId"/><!-- 图片id -->
+
+    	</resultMap>
+    	<!-- 查询 -->
+    	<select id="showIncome" resultMap="incomeType" statementType="STATEMENT">
+    		SELECT *
+    		FROM jz_income_type
+    	</select>
+    	<!-- 新增一条收入类型 -->
+    	<insert id="insertIncome" parameterType="com.jizhang.entity.income.IncomeType" 
+    	statementType="PREPARED">
+    		INSERT INTO jz_income_type
+    		(id,income_name,is_default,super_id,permissions)
+    		VALUES (#{id},#{income_name},#{is_default},#{super_id},#{permissions})
+    	</insert>
+    	<!-- 更新 -->
+    	<update id="updateIncome" parameterType="com.jizhang.entity.income.IncomeType" statementType="PREPARED">
+    		UPDATE jz_income_type
+    		<trim prefix="set" suffixOverrides=",">
+    			<if test="income_pngId!=null">income_pngId=#{income_pngId},</if>
+    			<if test="income_name!=null and permissions!=1">income_name=#{income_name}</if>
+    			
+    		</trim>
+    		WHERE id=#{id}
+    	</update>
+    	<!-- 删除一个收入类型 -->
+    	<delete id="delIncome" parameterType="int">
+    		DELETE FROM jz_income_type 
+    		WHERE id=#{id}
+
+    	</delete>
+    </mapper>

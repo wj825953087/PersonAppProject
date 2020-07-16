@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    
+<!--   // -->
+<!-- com.jizhang.dao.UserDao -->
+  <mapper namespace="com.jizhang.entity.user.User">
+<!-- 用户表 -->
+	<resultMap type="com.jizhang.entity.user.User" id="UserMap">
+	<!-- 用户id -->
+		<id property="user_id" column="user_id"/>
+	<!-- 用户名 -->
+		<result property="username" column="username"/>
+	<!-- 密码 -->
+		<result property="password" column="password"/>
+	<!-- 电话号码 -->
+		<result property="phone" column="phone"/>
+	<!-- 用户名称 -->
+		<result property="user_alias" column="user_alias"/>
+	<!-- 用户性别 -->
+		<result property="gender" column="gender"/>
+	<!-- 用户头像 -->
+		<result property="headImage" column="headImage"/>
+	<!-- 用户生日 -->
+		<result property="birthday" column="birthday"/>
+		
+		<!-- 用户账号信息表 -->
+		<collection property="accounts" javaType="java.util.ArrayList" ofType="com.jizhang.entity.user.UserAccount">
+			<!-- 账号id -->
+			<id property="id" column="id"/>
+			<!-- 用户id -->
+			<result property="user_id" column="user_id"/>
+			<!-- 账户名 -->
+			<result property="account_name" column="account_name"/>
+			<!-- 卡号 -->
+			<result property="account_card_number" column="account_card_number"/>
+			<!-- 账户金额 -->
+			<result property="account_money" column="account_money"/>
+		</collection>
+	</resultMap>
+	<select id="getUserIdByUsername" parameterType="String" resultType="int">
+		SELECT user_id
+		FROM jz_user
+		WHERE username=#{username}
+	</select>
+	
+	<!-- 根据用户名查询用户信息 -->
+  	<select id="getNameByUser" resultMap="UserMap" parameterType="String" statementType="PREPARED">
+  		SELECT *
+  		FROM jz_user `user`,jz_user_account `ac`
+  		WHERE username=#{username} AND 
+  		user.user_id=ac.user_id
+  	</select>
+  	
+  	<!-- 查询用户名是否重复 -->
+  	<select id="query_repeat" resultType="String" parameterType="String">
+  		SELECT username
+  		FROM jz_user
+  		WHERE username=#{username}
+  	</select>
+  	
+	<!-- 根据用户id查询用户信息 -->
+	<select id="getUserById" resultType="com.jizhang.entity.user.User" parameterType="int">
+		SELECT *
+		FROM jz_user
+		WHERE user_id=#{user_id}
+	</select>
+	
+	
+	<!-- 无条件查询 -->
+	<select id="getUser" resultType="com.jizhang.entity.user.User" >
+		SELECT *
+		FROM jz_user
+	</select>
+
+
+	<!-- 增加一用户 -->
+	<insert id="insertUser" parameterType="com.jizhang.entity.user.User" statementType="PREPARED" >
+	  <selectKey  keyProperty="user_id" order="AFTER" resultType="int">
+               select LAST_INSERT_ID()
+       </selectKey>
+		INSERT INTO jz_user (user_id,username,password,phone)
+		VALUES(
+		#{user_id},
+		#{username},
+		#{password},
+		#{phone}
+		)
+	</insert>
+	<!-- 更新用户信息 -->
+<!-- 	<update id="updateUser" parameterType="com.jizhang.entity.user.User" statementType="PREPARED">
+		UPDATE jz_user
+		SET 
+	</update> -->
+  </mapper>  

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jizhang.entity.user.UserAccount">
+
+<!-- 用户账号信息表 -->
+	<resultMap type="com.jizhang.entity.user.User" id="UserMap">
+			<!-- 账号id -->
+			<id property="id" column="id"/>
+			<!-- 用户id -->
+			<result property="user_id" column="user_id"/>
+			<!-- 账户名 -->
+			<result property="account_name" column="account_name"/>
+			<!-- 卡号 -->
+			<result property="account_card_number" column="account_card_number"/>
+			<!-- 账户金额 -->
+			<result property="account_money" column="account_money"/>
+		
+
+	</resultMap>
+	
+	<!-- 统计用户账户个数 -->
+	<select id="count_userAccount" resultType="int" parameterType="int">
+		SELECT count(user_id)
+		FROM jz_user_account
+		WHERE user_id=#{user_id}
+	</select>
+	
+	<!-- 根据用户id查询 -->
+	<select id="getByUserIdAccount" resultType="com.jizhang.entity.user.UserAccount" parameterType="int">
+		SELECT *
+		FROM jz_user_account
+		WHERE user_id=#{user_id}
+	</select>
+	<!-- 根据用户id和账号名查询 -->
+	<select id="getByNameAccount" resultType="com.jizhang.entity.user.UserAccount" parameterType="java.util.Map">
+		SELECT *
+		FROM jz_user_account
+		WHERE user_id=#{user_id} AND
+		account_name=#{account_name}
+	</select>
+	<!-- 插入 -->
+	<insert id="insert_userAccount" parameterType="com.jizhang.entity.user.UserAccount"
+		statementType="PREPARED" 
+		useGeneratedKeys="true" 
+		keyProperty="id">
+		INSERT INTO jz_user_account(id,user_id,account_name,account_card_number,account_money) 
+		VALUES (#{id},#{user_id},#{account_name},#{account_card_number},#{account_money})
+	</insert>
+	<!-- 根据用户id和账户id删除账号 -->
+	<delete id="del_userAccount" parameterType="Map" statementType="PREPARED">
+		DELETE FROM jz_user_account WHERE id=#{id} and user_id=#{user_id}
+	</delete>
+</mapper>

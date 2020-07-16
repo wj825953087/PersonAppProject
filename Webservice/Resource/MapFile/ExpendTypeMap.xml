@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+
+    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    <mapper namespace="com.jizhang.entity.expend.ExpendType">
+    	<resultMap type="com.jizhang.entity.expend.ExpendType" id="expendType">
+    		<id property="id" column="id" /> <!-- id -->
+    		<result property="expend_name" column="expend_name" /> 
+    		<result property="is_default" column="is_default"/><!-- 默认类别 -->
+    		<result property="super_id" column="super_id"/><!-- 上级 -->
+    		<result property="permissions" column="permissions"/><!-- 权限 -->
+    		<result property="expend_pngId" column="expend_pngId"/><!-- 图片id -->
+
+    	</resultMap>
+    	<!-- 查询 -->
+    	<select id="showExpend" resultMap="expendType" statementType="STATEMENT">
+    		SELECT *
+    		FROM jz_expend_type
+    	</select>
+    	
+    	<!-- 新增一条支出类型 -->
+    	<insert id="insertExpend" parameterType="com.jizhang.entity.expend.ExpendType" 
+    	statementType="PREPARED">
+    		INSERT INTO jz_expend_type
+    		(id,expend_name,is_default,super_id,permissions)
+    		VALUES (#{id},#{expend_name},#{is_default},#{super_id},#{permissions})
+    	</insert>
+    	
+    	<!-- 更新 -->
+    	<update id="updateExpend" parameterType="com.jizhang.entity.expend.ExpendType" statementType="PREPARED">
+    		UPDATE jz_expend_type
+    		<trim prefix="set" suffixOverrides=",">
+    			<if test="expend_pngId!=null">expend_pngId=#{expend_pngId},</if>
+    			<if test="expend_name!=null and permissions!=1">expend_name=#{expend_name}</if>
+    			
+    		</trim>
+    		WHERE id=#{id}
+    	</update>
+    <!-- 删除一个支出类型 -->
+    	<delete id="delExpend" parameterType="int">
+    		DELETE FROM jz_expend_type 
+    		WHERE id=#{id}
+
+    	</delete>
+    </mapper>
